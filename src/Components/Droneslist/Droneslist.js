@@ -1,61 +1,34 @@
 import Spinner from "../Spinner/Spinner";
 import React from "react";
-import { parseString } from 'xml-js';
-import Axios from "axios";
-import XMLParser from "react-xml-parser";
+import { useState, useEffect } from "react";
+
+  
+function Droneslist(props) {
+    const [drones, setDrones] = useState([]);
+    const [data, setData] = useState(null);
+    const [err, seterr] = useState(null);
+    const [loading, setloading] = useState(true);
 
 
-export class DronesList extends React.Component {
-    state = {
-      data: null,
-      loading: true,
-      err: null,
-      posts: null
-    };
-  
-    componentDidMount() {
-      this.fetchData();
-      console.log("component did mount")
-      this.interval = setInterval(() => this.fetchData(), 60000); // refresh every 60 seconds
-    }
-  
-    componentWillUnmount() {
-        console.log("component unmounted")
-      clearInterval(this.interval);
-    }
-  
-    fetchData() {
-    
-      fetch("localhost:8080")
-        .then(response => response.text())
-        .then(str => parseString(str, { compact: true }))
-        .then(data => this.setState({ data }))
-        .catch((e) => {
-            this.setState({loading:false, err:e});
-            console.log(e);
-          });
-    }
-  
-    render() {
-console.log("let's go")
-        const { data, loading, err, posts } = this.state;
-
-        if (data) {
-            let p = [];
-            var drones = data.children[0].children;
-                for (let i in drones) {
-                    if (
-                      drones[i].children !== null &&
-                      drones[i].children !== [] &&
-                      drones[i].children.length > 0
-                    ) {
-                      p.push(drones[i].children);
-                    }
-                  }
-                  this.setState({loading:false, posts:p});
+    useEffect(() => {
+      async function getData() {
+        try {
+          const response = await fetch("http://localhost:8080");
+          const data = await response.json();
+          setData(data);
+          setDrones(data.Capture.Drones)
+          setloading(false)
+        } catch (error) {
+          console.error(error);
+          seterr(error)
         }
-        
+      }
+      getData();
+    }, []);
   
+    console.log("let's go")
+
+
       let rendered;
       let error;
       let errorMsg;
@@ -74,16 +47,21 @@ console.log("let's go")
       if (loading) {
         rendered = <div><Spinner /></div>;
       }
-      if (!loading && data && posts.length > 0) {
-        rendered = <div>{posts}</div>;
+      if (!loading && data && drones.length > 0) {
+        console.log("drone", drones)
+        rendered = <div>{drones.map((item) => (
+          <li key={item.SerialNumber}>{item.SerialNumber}</li>
+        ))}</div>;
+        console.log("rendered", rendered)
       }
     
       return (
         <div>
-          <div className="container">{rendered}</div>
+          <div className="container">HERE{rendered}</div>
         </div>
       );
     
-    }
   }
   
+
+  export default Droneslist;

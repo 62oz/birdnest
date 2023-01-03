@@ -1,5 +1,9 @@
 package main
 
+import (
+	s "birdnest/server"
+)
+
 func main() {
-	Server()
+	s.Server()
 }

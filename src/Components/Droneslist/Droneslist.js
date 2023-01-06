@@ -1,10 +1,11 @@
 import Spinner from "../Spinner/Spinner";
 import React from "react";
 import { useState, useEffect } from "react";
+import Table from "../Table/Table";
+
 
   
 function Droneslist(props) {
-    const [drones, setDrones] = useState([]);
     const [data, setData] = useState(null);
     const [err, seterr] = useState(null);
     const [loading, setloading] = useState(true);
@@ -16,7 +17,6 @@ function Droneslist(props) {
           const response = await fetch("http://localhost:8080");
           const data = await response.json();
           setData(data);
-          setDrones(data.Capture.Drones)
           setloading(false)
         } catch (error) {
           console.error(error);
@@ -24,10 +24,7 @@ function Droneslist(props) {
         }
       }
       getData();
-    }, []);
-  
-    console.log("let's go")
-
+    }, [data]);
 
       let rendered;
       let error;
@@ -47,12 +44,10 @@ function Droneslist(props) {
       if (loading) {
         rendered = <div><Spinner /></div>;
       }
-      if (!loading && data && drones.length > 0) {
-        console.log("drone", drones)
-        rendered = <div>{drones.map((item) => (
-          <li key={item.SerialNumber}>{item.SerialNumber}</li>
-        ))}</div>;
-        console.log("rendered", rendered)
+
+      if (!loading && data) {
+        console.log("data",data)
+        rendered = <Table data={data} />;
       }
     
       return (

@@ -4,7 +4,7 @@ import Droneslist from './Components/Droneslist/Droneslist';
 function App() {
   return (
     <div className="App">
-      <Droneslist />
+      <div><Droneslist /></div>
     </div>
   );
 }

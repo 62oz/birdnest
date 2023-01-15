@@ -48,6 +48,8 @@ type Pilot struct {
 	Spotted     string  `json:"spotted"`
 	DroneSN     string  `json:"droneSN"`
 	Distance    float64 `json:"distance"`
+	PositionY   float64 `json:"positionY"`
+	PositionX   float64 `json:"positionX"`
 }
 
 var Pilots []Pilot
@@ -81,7 +83,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the XML into a struct
 	var xmlData Report
 	if err := xml.Unmarshal(body, &xmlData); err != nil {
-		fmt.Println("XML ended: sending latest data)
+		fmt.Println("XML ended: sending latest data")
 		fmt.Println(err)
 		// Write
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -120,6 +122,8 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		}
 		pilot.DroneSN = drone.SerialNumber
 		pilot.Spotted = xmlData.Capture.SnapshotTimestamp
+		pilot.PositionX = drone.PositionX
+		pilot.PositionY = drone.PositionY
 		var xOrigin, yOrigin float64
 		xOrigin = 250
 		yOrigin = 250
@@ -132,6 +136,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 			if p.PilotId == pilot.PilotId {
 				Pilots[i] = pilot
 				exists = true
+				break
 			}
 		}
 

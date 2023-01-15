@@ -2,14 +2,13 @@ import Spinner from "../Spinner/Spinner";
 import React from "react";
 import { useState, useEffect } from "react";
 import Table from "../Table/Table";
-
+import RadarChart from "./Dronesmap";
 
   
-function Droneslist(props) {
+function Droneslist() {
     const [data, setData] = useState(null);
     const [err, seterr] = useState(null);
     const [loading, setloading] = useState(true);
-
 
     useEffect(() => {
       async function getData() {
@@ -24,7 +23,7 @@ function Droneslist(props) {
         }
       }
       getData();
-    }, [data]);
+    }, []);
 
       let rendered;
       let error;
@@ -45,9 +44,10 @@ function Droneslist(props) {
         rendered = <div><Spinner /></div>;
       }
 
-      if (!loading && data) {
-        console.log("data",data)
-        rendered = <Table data={data} />;
+      if (!loading && data && data.length > 0) {
+        console.log("data1",data)
+        rendered = <div><Table data={data} />
+        <RadarChart data={data} /></div>;
       }
     
       return (
@@ -58,5 +58,6 @@ function Droneslist(props) {
     
   }
   
+
 
   export default Droneslist;

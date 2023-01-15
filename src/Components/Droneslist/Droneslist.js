@@ -2,7 +2,7 @@ import Spinner from "../Spinner/Spinner";
 import React from "react";
 import { useState, useEffect } from "react";
 import Table from "../Table/Table";
-import RadarChart from "./Dronesmap";
+import EmptyRadar from "./Dronesmap";
 
   
 function Droneslist() {
@@ -23,7 +23,7 @@ function Droneslist() {
         }
       }
       getData();
-    }, []);
+    }, [data]);
 
       let rendered;
       let error;
@@ -44,10 +44,14 @@ function Droneslist() {
         rendered = <div><Spinner /></div>;
       }
 
-      if (!loading && data && data.length > 0) {
+      if (data === null) {
+        rendered = <div>UGH</div>
+        console.log("h", data)
+      } else if (!loading && data && data.length > 0) {
+        console.log("dta not nul")
         console.log("data1",data)
         rendered = <div><Table data={data} />
-        <RadarChart data={data} /></div>;
+        <EmptyRadar data={data} /></div>;
       }
     
       return (

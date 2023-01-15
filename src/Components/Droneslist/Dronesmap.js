@@ -1,40 +1,47 @@
-import { Radar } from 'react-chartjs-2';
+import Radar from 'react-d3-radar'
 import { useRef, useEffect } from 'react'
 
-function RadarChart({ data }) {
-  const chartRef = useRef(null);
-  useEffect(() => {
-    if(chartRef.current){
-      chartRef.current.destroy();}
-  }, [data, chartRef])
-  console.log(data[0].positionX)
-  return (
-    <Radar
-    ref={chartRef}
-      data={{
-        labels: data.map(point => point.positionX),
-        datasets: [
-          {
-            label: data.map(point => point.firstName),
-            data: data.map(point => point.positionY),
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
-          },
-        ],
-        
-      }}
-      
-      options={{
-        scale: {
-          type: 'linear',
-        },
-      }}
-    />
-  );
-}
+  function RadarPoint({ label, value }) {
+    return (
+      <circle cx={500} cy={500} r={value} fill="black" stroke="black" />
+    );
+  }
+
+  function RadarChart({ data }) {
+    const chartRef = useRef(null);
+    useEffect(() => {
+      if(chartRef.current){
+        chartRef.current.destroy();}
+    }, [data])
+    
+    if (!data) return <div>Loading...</div>;
+
+    console.log("data not null")
+    const radarData = {
+      variables: [{key: 'positionX', label:'X'},{key: 'positionY', label:'Y'}],
+      sets : data.map(point => ( {
+        key: point.firstName,
+        label: point.firstName,
+        values: {positionX: point.positionX, positionY: point.positionY}
+      }))
+    }
+
+    return (
+      <div>
+        <Radar
+            width={1000}
+            height={1000}
+            padding={50}
+            domainMax={500000}
+            data={radarData}
+          >
+            {data.map(item => (
+              <RadarPoint key={item.key} {...item} />
+            ))}
+            </Radar>
+      </div>
+    );
+
+  }
 
 export default RadarChart

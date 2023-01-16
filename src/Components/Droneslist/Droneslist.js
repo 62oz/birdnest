@@ -2,8 +2,7 @@ import Spinner from "../Spinner/Spinner";
 import React from "react";
 import { useState, useEffect } from "react";
 import Table from "../Table/Table";
-import EmptyRadar from "./Dronesmap";
-
+import Chart from "./Dronesmap"
   
 function Droneslist() {
     const [data, setData] = useState(null);
@@ -50,8 +49,8 @@ function Droneslist() {
       } else if (!loading && data && data.length > 0) {
         console.log("dta not nul")
         console.log("data1",data)
-        rendered = <div><Table data={data} />
-        <EmptyRadar data={data} /></div>;
+        rendered = <div><Table data={data} /><br/>
+        <Chart data={data} /></div>;
       }
     
       return (

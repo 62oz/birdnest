@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
+	"math/rand"
 	"sort"
 	"time"
 
@@ -50,10 +51,12 @@ type Pilot struct {
 	Distance    float64 `json:"distance"`
 	PositionY   float64 `json:"positionY"`
 	PositionX   float64 `json:"positionX"`
+	Colour      string  `json:"colour"`
 }
 
 var Pilots []Pilot
 var jsonData []byte
+var colors = make(map[string]string)
 
 type ByDistance []Pilot
 
@@ -124,6 +127,10 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		pilot.Spotted = xmlData.Capture.SnapshotTimestamp
 		pilot.PositionX = drone.PositionX
 		pilot.PositionY = drone.PositionY
+		if _, ok := colors[pilot.PilotId]; !ok {
+			colors[pilot.PilotId] = fmt.Sprintf("#%06x", rand.Intn(1<<24))
+		}
+		pilot.Colour = colors[pilot.PilotId]
 		var xOrigin, yOrigin float64
 		xOrigin = 250
 		yOrigin = 250
@@ -142,6 +149,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 
 		// If new Pilot to list append
 		if !exists {
+			pilot.Colour = fmt.Sprintf("#%06x", rand.Intn(1<<24))
 			Pilots = append(Pilots, pilot)
 		}
 	}

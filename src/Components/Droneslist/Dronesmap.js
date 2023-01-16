@@ -1,47 +1,46 @@
-import Radar from 'react-d3-radar'
-import { useRef, useEffect } from 'react'
+import { VictoryChart, VictoryScatter, VictoryTheme , VictoryAxis} from "victory";
 
-  function RadarPoint({ label, value }) {
-    return (
-      <circle cx={500} cy={500} r={value} fill="black" stroke="black" />
-    );
-  }
 
-  function RadarChart({ data }) {
-    const chartRef = useRef(null);
-    useEffect(() => {
-      if(chartRef.current){
-        chartRef.current.destroy();}
-    }, [data])
-    
-    if (!data) return <div>Loading...</div>;
+function Chart(data) {
+  data = data.data
+  const coor = data.map(item => 
+    (item.positionX !== undefined && item.positionY !== undefined && !isNaN(item.positionX) && !isNaN(item.positionY))
+    ? {x: item.positionX - 250000, y: item.positionY - 250000}
+    : undefined
+  ).filter(item => item !== undefined);
+  
+  const colours = data.map(item => item.colour)
 
-    console.log("data not null")
-    const radarData = {
-      variables: [{key: 'positionX', label:'X'},{key: 'positionY', label:'Y'}],
-      sets : data.map(point => ( {
-        key: point.firstName,
-        label: point.firstName,
-        values: {positionX: point.positionX, positionY: point.positionY}
-      }))
+  const coorWithColours = coor.map((point, index) => {
+    return {
+      ...point,
+      fill: colours[index]
     }
-
-    return (
-      <div>
-        <Radar
-            width={1000}
-            height={1000}
-            padding={50}
-            domainMax={500000}
-            data={radarData}
-          >
-            {data.map(item => (
-              <RadarPoint key={item.key} {...item} />
-            ))}
-            </Radar>
-      </div>
-    );
-
+  });
+    console.log("coorC", coorWithColours)
+      return (
+        <VictoryChart
+        domain={{ x: [-250000, 250000], y: [-250000, 250000] }}
+        theme={VictoryTheme.material}
+      >
+         <VictoryAxis
+    label="X"
+    tickValues={[-250000, 250000]}
+  />
+  <VictoryAxis
+    dependentAxis
+    label="Y"
+    tickValues={[-250000, 250000]}
+  />
+        <VictoryScatter
+           size={7}
+           data={coorWithColours}
+           style={{data: {fill: (coorWithColours) => coorWithColours.fill}}}
+        />
+      </VictoryChart>
+    )
   }
 
-export default RadarChart
+    
+export default Chart
+    

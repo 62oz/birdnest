@@ -45,10 +45,7 @@ function Droneslist() {
 
       if (data === null) {
         rendered = <div>UGH</div>
-        console.log("h", data)
       } else if (!loading && data && data.length > 0) {
-        console.log("dta not nul")
-        console.log("data1",data)
         rendered = <div><Table data={data} /><br/>
         <Chart data={data} /></div>;
       }

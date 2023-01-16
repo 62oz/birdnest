@@ -1,23 +1,24 @@
 import { VictoryChart, VictoryScatter, VictoryTheme , VictoryAxis} from "victory";
 
+const handleClick = (pilot) => {
+  let date = new Date(pilot.spotted)
+  const alertBox = alert(`  Pilot: ${pilot.firstName} ${pilot.lastName}
+  Last seen: ${date.toUTCString()}`);
+  window.onclick = function(event) {
+    if (event.target !== alertBox) {
+      alertBox.close();
+      window.removeEventListener("click", handleClick);
+    }
+  }
+}
 
 function Chart(data) {
   data = data.data
-  const coor = data.map(item => 
-    (item.positionX !== undefined && item.positionY !== undefined && !isNaN(item.positionX) && !isNaN(item.positionY))
-    ? {x: item.positionX - 250000, y: item.positionY - 250000}
-    : undefined
-  ).filter(item => item !== undefined);
-  
-  const colours = data.map(item => item.colour)
 
-  const coorWithColours = coor.map((point, index) => {
-    return {
-      ...point,
-      fill: colours[index]
-    }
-  });
-    console.log("coorC", coorWithColours)
+  const coor = data.filter(item => item.positionX !== undefined && item.positionX !== null && !isNaN(item.positionX) && item.positionY !== undefined && item.positionY !== null && !isNaN(item.positionY)).map(item => 
+  ({x: item.positionX - 250000, y: item.positionY - 250000, fill: item.colour, firstName: item.firstName, lastName: item.lastName, spotted: item.spotted, onClick: () => handleClick(item)})
+  );
+
       return (
         <VictoryChart
         domain={{ x: [-250000, 250000], y: [-250000, 250000] }}
@@ -34,9 +35,21 @@ function Chart(data) {
   />
         <VictoryScatter
            size={7}
-           data={coorWithColours}
-           style={{data: {fill: (coorWithColours) => coorWithColours.fill}}}
+           data={coor}
+           style={{ data: { fill: (d) =>  d.datum.fill ? d.datum.fill : "black" } }}
+           events={[
+            {
+                target: "data",
+                eventHandlers: {
+                    onClick: (e,props) => {
+                      handleClick(props.datum);
+                       return {};
+                    }
+                }
+            }
+        ]}
         />
+
       </VictoryChart>
     )
   }

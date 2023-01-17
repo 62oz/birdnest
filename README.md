@@ -1,47 +1,46 @@
-#Birdnest
+# Birdnest
 
 Birdnest is a full-stack web application that displays data on drones and pilots. The frontend is built with React and the backend is built with Go.
 Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-#Prerequisites
 
-    Node.js and npm
-    Go
-    Git
+## Prerequisites
 
-#Installing
+ - Node.js and npm
+ - Go
+ - Git
 
-    Clone the repository:
+## Installing
 
-git clone https://github.com/62oz/birdnest.git
+Clone the repository:
 
-    Install the dependencies for the frontend:
+    git clone https://github.com/62oz/birdnest.git
 
-cd birdnest/client
-npm install
+Install the dependencies for the frontend:
 
-    Start the frontend development server:
+    npm install
 
-npm start
+Start the frontend development server:
 
-    In a separate terminal, navigate to the root directory of the project and start the backend server:
+    npm start
 
-cd birdnest
-go run main.go
+In a separate terminal, navigate to the root directory of the project and start the backend server:
 
-    Visit http://localhost:3000 in your browser to see the application.
+    go run main.go
 
-#Built With
+Visit http://localhost:3000 in your browser to see the application.
 
-    React - The JavaScript library for building user interfaces
-    Go - The programming language used for the backend
-    Heroku - The platform used for deploying the app
+## Built With
 
-#Authors
+ - React - The JavaScript library for building user interfaces
+ - Go - The programming language used for the backend
+ - Heroku - The platform used for deploying the app
 
-    Ali Ouzir - Initial work - github.com/62oz/birdnest
+## Authors
 
-#Acknowledgments
+Ali Ouzir - Initial work - https://github.com/62oz/birdnest
 
-    Reaktor for providing the data used in this project.
+## Acknowledgments
+
+Reaktor for providing the data used in this project.

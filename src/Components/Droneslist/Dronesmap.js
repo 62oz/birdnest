@@ -7,14 +7,8 @@ import '../../App.css'
 
 const handleClick = (pilot) => {
   let date = new Date(pilot.spotted)
-  /* const alertBox =  */alert(`  Pilot: ${pilot.firstName} ${pilot.lastName}
-  Last violation: ${date.toUTCString()}`);
-  /* window.onclick = function(event) {
-    if (event.target !== alertBox) {
-      alertBox.close();
-      window.removeEventListener("click", handleClick);
-    }
-  } */
+  alert(`  Pilot: ${pilot.firstName} ${pilot.lastName}
+  Last violation: ${date.toUTCString()}`);  
 }
 
   function Chart({ data }) {
@@ -76,7 +70,7 @@ const handleClick = (pilot) => {
         />
         <VictoryScatter
             data={[{ x: 0, y: 0 }]}
-            size={65}
+            size={50}
             style={{ data: { fill: "none", stroke: "red", strokeWidth: 1, pointerEvents: "none"  } }}/>
     </VictoryChart>
         </div>

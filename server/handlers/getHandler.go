@@ -96,7 +96,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//////////////////// To pilots
+	//////////////////// Drone data to Pilot data
 
 	for _, drone := range xmlData.Capture.Drones {
 		// Make a GET request to the API
@@ -110,7 +110,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		if resp.StatusCode == http.StatusNotFound {
 			continue
 		}
-		
+
 		defer resp.Body.Close()
 
 		// Read the response body
@@ -129,7 +129,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		pilot.DroneSN = drone.SerialNumber
-		
+
 		pilot.PositionX = drone.PositionX
 		pilot.PositionY = drone.PositionY
 		if _, ok := colors[pilot.PilotId]; !ok {
@@ -141,15 +141,15 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		yOrigin = 250
 		d := math.Sqrt(math.Pow((drone.PositionX/1000)-xOrigin, 2) + math.Pow((drone.PositionY/1000)-yOrigin, 2))
 		pilot.Distance = d
-		if (pilot.Distance <= 100) {
+		if pilot.Distance <= 100 {
 			pilot.Spotted = xmlData.Capture.SnapshotTimestamp
 		}
-		
+
 		// Update Pilots
 		exists := false
 		for i, p := range Pilots {
 			if p.PilotId == pilot.PilotId {
-				if (pilot.Distance > 100) {
+				if pilot.Distance > 100 {
 					pilot.Spotted = Pilots[i].Spotted
 				} else {
 					pilot.Spotted = xmlData.Capture.SnapshotTimestamp
@@ -161,13 +161,23 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// If new Pilot to list append
-		if (!exists && pilot.Distance <= 100) {
+		if !exists && pilot.Distance <= 100 {
 			pilot.Colour = fmt.Sprintf("#%06x", rand.Intn(1<<24))
 			Pilots = append(Pilots, pilot)
 		}
 	}
 
 	// Only display 10 minutes and less (after violation of NDZ)
+	FilterExpired()
+
+	// Sort the pilots by distance
+	sort.Sort(ByDistance(Pilots))
+
+	// Marshall struct to JSON and send to client
+	SendPilots(Pilots, w)
+}
+
+func FilterExpired() {
 	for i, pilot := range Pilots {
 		t, err := time.Parse(time.RFC3339, pilot.Spotted)
 		if err != nil {
@@ -185,12 +195,10 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+}
 
-	// Sort the pilots by distance
-	sort.Sort(ByDistance(Pilots))
-
-	// Marshall struct to JSON
-	jsonData, err = json.Marshal(Pilots)
+func SendPilots(Pilots []Pilot, w http.ResponseWriter) {
+	jsonData, err := json.Marshal(Pilots)
 	if err != nil {
 		fmt.Println("Marshall error")
 		log.Fatal(err)
@@ -201,5 +209,4 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Write(jsonData)
-
 }

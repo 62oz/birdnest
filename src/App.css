@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.table {
+  font-size: 14px;
+  margin: 0 auto;
+  width: 80%;
+  border-collapse: collapse;
+}
+
+.chart {
+  width: 800px;
+  height: 800px;
+
+}
+
+.circle {
+}

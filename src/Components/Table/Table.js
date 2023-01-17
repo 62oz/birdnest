@@ -3,6 +3,7 @@ import { useTable } from "react-table"
 import { useState } from "react"
 import { useMemo } from "react"
 import { SearchContext } from "../Droneslist/Droneslist"
+import "../../App.css"
 
 function Table({ data }) {
 
@@ -43,7 +44,7 @@ const handleSort = column => {
   
 return (
 
-  <table {...getTableProps()}>
+  <table {...getTableProps()} className="table">
     <thead>
       {headerGroups.map(headerGroup => (
         <tr {...headerGroup.getHeaderGroupProps()}>

@@ -106,6 +106,11 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 			return
 		}
+		// If 404 skip pilot
+		if resp.StatusCode == http.StatusNotFound {
+			continue
+		}
+		
 		defer resp.Body.Close()
 
 		// Read the response body
@@ -124,7 +129,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		pilot.DroneSN = drone.SerialNumber
-		pilot.Spotted = xmlData.Capture.SnapshotTimestamp
+		
 		pilot.PositionX = drone.PositionX
 		pilot.PositionY = drone.PositionY
 		if _, ok := colors[pilot.PilotId]; !ok {
@@ -136,11 +141,19 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		yOrigin = 250
 		d := math.Sqrt(math.Pow((drone.PositionX/1000)-xOrigin, 2) + math.Pow((drone.PositionY/1000)-yOrigin, 2))
 		pilot.Distance = d
-
+		if (pilot.Distance <= 100) {
+			pilot.Spotted = xmlData.Capture.SnapshotTimestamp
+		}
+		
 		// Update Pilots
 		exists := false
 		for i, p := range Pilots {
 			if p.PilotId == pilot.PilotId {
+				if (pilot.Distance > 100) {
+					pilot.Spotted = Pilots[i].Spotted
+				} else {
+					pilot.Spotted = xmlData.Capture.SnapshotTimestamp
+				}
 				Pilots[i] = pilot
 				exists = true
 				break
@@ -148,13 +161,13 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// If new Pilot to list append
-		if !exists {
+		if (!exists && pilot.Distance <= 100) {
 			pilot.Colour = fmt.Sprintf("#%06x", rand.Intn(1<<24))
 			Pilots = append(Pilots, pilot)
 		}
 	}
 
-	// Only display 10 minutes and less
+	// Only display 10 minutes and less (after violation of NDZ)
 	for i, pilot := range Pilots {
 		t, err := time.Parse(time.RFC3339, pilot.Spotted)
 		if err != nil {

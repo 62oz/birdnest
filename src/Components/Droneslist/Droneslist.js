@@ -19,7 +19,7 @@ function Droneslist() {
   useEffect(() => {
     async function getData() {
       try {
-        const response = await fetch("http://localhost:8080");
+        const response = await fetch("http://localhost:8080", {mode:"cors"});
         const data = await response.json();
         setData(data);
         setloading(false);
@@ -46,12 +46,12 @@ function Droneslist() {
     );
   }
 
-  if (loading) {
+  if (loading || data === null) {
     rendered = <div><Spinner /></div>;
   }
 
   if (data === null) {
-    rendered = <div>UGH</div>
+    rendered = <div>No violations of NDZ yet<Spinner /></div>;
   } else if (!loading && data && data.length > 0) {
     rendered = (
       <SearchContext.Provider value={{ searchQuery, handleSearch }}>
@@ -71,7 +71,7 @@ function Droneslist() {
 
   return (
     <div>
-      <div className="container">HERE{rendered}</div>
+      <div className="container">{rendered}</div>
     </div>
   );
 }

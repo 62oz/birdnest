@@ -1,12 +1,14 @@
-import { VictoryChart, VictoryScatter, VictoryTheme , VictoryAxis} from "victory";
+import { VictoryChart, VictoryScatter, VictoryTheme , VictoryAxis, VictoryLegend} from "victory";
 import { useContext } from "react";
 import { SearchContext } from "./Droneslist";
 import { useMemo } from "react";
+import '../../App.css'
+
 
 const handleClick = (pilot) => {
   let date = new Date(pilot.spotted)
   /* const alertBox =  */alert(`  Pilot: ${pilot.firstName} ${pilot.lastName}
-  Last seen: ${date.toUTCString()}`);
+  Last violation: ${date.toUTCString()}`);
   /* window.onclick = function(event) {
     if (event.target !== alertBox) {
       alertBox.close();
@@ -33,10 +35,20 @@ const handleClick = (pilot) => {
     );
 
       return (
-        <VictoryChart
+        <div className="chart">
+<VictoryChart
         domain={{ x: [-250000, 250000], y: [-250000, 250000] }}
         theme={VictoryTheme.material}
       >
+        <VictoryLegend x={270} y={310}
+    centerTitle
+    orientation="horizontal"
+    gutter={20}
+    style={{ border: { stroke: "black" } }}
+    data={[
+      { name: "NDZ", symbol: { fill: "none", stroke: "red", strokeWidth: 1 } },
+    ]}
+  />
          <VictoryAxis
     label="X"
     tickValues={[-250000, 250000]}
@@ -62,8 +74,13 @@ const handleClick = (pilot) => {
             }
         ]}
         />
-
-      </VictoryChart>
+        <VictoryScatter
+            data={[{ x: 0, y: 0 }]}
+            size={65}
+            style={{ data: { fill: "none", stroke: "red", strokeWidth: 1, pointerEvents: "none"  } }}/>
+    </VictoryChart>
+        </div>
+        
     )
   }
     
